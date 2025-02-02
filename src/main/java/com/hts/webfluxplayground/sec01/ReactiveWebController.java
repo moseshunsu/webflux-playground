@@ -2,6 +2,7 @@ package com.hts.webfluxplayground.sec01;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +24,15 @@ public class ReactiveWebController {
 
     @GetMapping("products")
     public Flux<Product> getProducts() {
+        return this.webClient.get()
+                .uri("/demo01/products")
+                .retrieve()
+                .bodyToFlux(Product.class)
+                .doOnNext(p -> log.info("received: {}", p));
+    }
+
+    @GetMapping(value = "products/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<Product> getProductsStream() {
         return this.webClient.get()
                 .uri("/demo01/products")
                 .retrieve()
